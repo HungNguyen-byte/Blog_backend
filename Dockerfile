@@ -9,8 +9,8 @@ RUN mvn -B clean package -DskipTests
 FROM eclipse-temurin:21-jdk
 WORKDIR /app
 
-# create an unprivileged user for runtime
-RUN addgroup -S app && adduser -S app -G app
+# create an unprivileged user for runtime (Debian/Ubuntu syntax)
+RUN groupadd -r app && useradd -r -g app app
 
 # copy built jar (wildcard to handle varying jar names)
 COPY --from=build /workspace/target/*.jar /app/app.jar
