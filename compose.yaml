@@ -1,0 +1,15 @@
+services:
+  api:
+    build: .
+    container_name: blog-api
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb+srv://hungntnk2006:hq246810@cluster0.zjoyw60.mongodb.net/blogdb?retryWrites=true&w=majority&appName=Cluster0
+      - JWT_SECRET=${JWT_SECRET:-L8j3ks9pQ2vX7mZ5nR1tY6uI8oP0aS3dF6gH9jK2lM4nO6pQ8rT0uV2wX4yZ6}
+    volumes:
+      - ./uploads:/uploads
+    restart: unless-stopped
+
+volumes:
+  uploads:
