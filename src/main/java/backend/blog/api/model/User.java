@@ -23,5 +23,6 @@ public class User {
     private String profilePic;
     private Instant createdAt;
     @JsonProperty("isAdmin")
+    @Builder.Default
     private boolean admin = false; // Default to false for all new users
 }
