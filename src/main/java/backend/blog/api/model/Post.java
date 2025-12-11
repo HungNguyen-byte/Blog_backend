@@ -12,6 +12,8 @@ import lombok.Data;
 public class Post {
     @Id
     private String postid;  // ← đổi từ _id / id
+    /** Immutable owner id from JWT (used for authorization) */
+    private String ownerId;
     private String title;
     private String desc;
     private String photo;   // store Cloudinary secure_url

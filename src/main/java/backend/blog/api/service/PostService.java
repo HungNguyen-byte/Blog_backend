@@ -26,7 +26,9 @@ public class PostService {
 
     @Transactional
     public Post createPost(Post p, HttpServletRequest request) {
-        p.setUsername(jwtService.extractUsername(jwtService.getTokenFromHeader(request.getHeader("Authorization"))));
+        String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
+        p.setUsername(jwtService.extractUsername(token));
+        p.setOwnerId(jwtService.extractUserId(token));
         if (p.getCreatedAt()==null) p.setCreatedAt(new java.util.Date().toString());
         Post saved = repo.save(p);
         
@@ -41,8 +43,14 @@ public class PostService {
     @Transactional
     public Post updatePost(String id, Post updated, HttpServletRequest request) {
         Post existing = getPost(id);
-        String currentUsername = jwtService.extractUsername(jwtService.getTokenFromHeader(request.getHeader("Authorization")));
-        if (!existing.getUsername().equals(currentUsername)) throw new RuntimeException("Not post owner");
+        String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
+        String currentUserId = jwtService.extractUserId(token);
+        String currentUsername = jwtService.extractUsername(token);
+
+        // Prefer ownerId; fallback to username for legacy posts
+        boolean isOwner = (existing.getOwnerId() != null && existing.getOwnerId().equals(currentUserId))
+                || existing.getUsername().equals(currentUsername);
+        if (!isOwner) throw new RuntimeException("Not post owner");
         existing.setTitle(updated.getTitle());
         existing.setDesc(updated.getDesc());
         existing.setPhoto(updated.getPhoto());
@@ -60,8 +68,13 @@ public class PostService {
     @Transactional
     public void deletePost(String id, HttpServletRequest request) {
         Post p = getPost(id);
-        String currentUsername = jwtService.extractUsername(jwtService.getTokenFromHeader(request.getHeader("Authorization")));
-        if (!p.getUsername().equals(currentUsername)) throw new RuntimeException("Not post owner");
+        String token = jwtService.getTokenFromHeader(request.getHeader("Authorization"));
+        String currentUserId = jwtService.extractUserId(token);
+        String currentUsername = jwtService.extractUsername(token);
+
+        boolean isOwner = (p.getOwnerId() != null && p.getOwnerId().equals(currentUserId))
+                || p.getUsername().equals(currentUsername);
+        if (!isOwner) throw new RuntimeException("Not post owner");
         
         // Delete all comments for this post
         // Note: CommentService will be injected if needed, but for now we'll handle it in controller
