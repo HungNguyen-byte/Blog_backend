@@ -102,7 +102,7 @@
             <version>3.0.2</version>
         </dependency>
 
-		<!-- Add to <dependencies> in pom.xml -->
+		<!-- Cloudinary SDK -->
         <dependency>
             <groupId>com.cloudinary</groupId>
             <artifactId>cloudinary-http44</artifactId>
@@ -121,6 +121,13 @@
             <groupId>io.github.cdimascio</groupId>
             <artifactId>java-dotenv</artifactId>
             <version>5.2.2</version>
+        </dependency>
+
+		<!-- Swagger/OpenAPI Documentation -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.3.0</version>
         </dependency>
 	</dependencies>
 
