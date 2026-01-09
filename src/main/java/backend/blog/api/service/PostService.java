@@ -113,9 +113,45 @@ public class PostService {
     public Post getPost(String id) { return repo.findById(id).orElseThrow(() -> new RuntimeException("Post not found")); }
 
     public List<Post> getAllPosts(String user, String cat, String q) {
-        if (q != null && !q.isBlank()) return repo.findByTitleContainingIgnoreCaseOrDescContainingIgnoreCase(q, q);
-        if (user != null && !user.isBlank()) return repo.findByUsername(user);
-        if (cat != null && !cat.isBlank()) return repo.findByCategoriesContaining(cat);
+        // Handle user filter (independent)
+        if (user != null && !user.isBlank()) {
+            List<Post> userPosts = repo.findByUsername(user);
+            // Apply additional filters on user posts if needed
+            if (cat != null && !cat.isBlank()) {
+                userPosts = userPosts.stream()
+                    .filter(p -> p.getCategories() != null && p.getCategories().contains(cat))
+                    .toList();
+            }
+            if (q != null && !q.isBlank()) {
+                final String query = q.toLowerCase();
+                userPosts = userPosts.stream()
+                    .filter(p -> (p.getTitle() != null && p.getTitle().toLowerCase().contains(query))
+                        || (p.getDesc() != null && p.getDesc().toLowerCase().contains(query)))
+                    .toList();
+            }
+            return userPosts;
+        }
+        
+        // Handle category filter
+        if (cat != null && !cat.isBlank()) {
+            List<Post> categoryPosts = repo.findByCategoriesContaining(cat);
+            // If text search is also provided, filter category posts by text
+            if (q != null && !q.isBlank()) {
+                final String query = q.toLowerCase();
+                categoryPosts = categoryPosts.stream()
+                    .filter(p -> (p.getTitle() != null && p.getTitle().toLowerCase().contains(query))
+                        || (p.getDesc() != null && p.getDesc().toLowerCase().contains(query)))
+                    .toList();
+            }
+            return categoryPosts;
+        }
+        
+        // Handle text search only
+        if (q != null && !q.isBlank()) {
+            return repo.findByTitleContainingIgnoreCaseOrDescContainingIgnoreCase(q, q);
+        }
+        
+        // No filters - return all posts
         return repo.findAll();
     }
 }
