@@ -21,6 +21,7 @@ public class User {
     private String email;
     private String password;
     private String profilePic;
+    private String bio;
     private Instant createdAt;
     @JsonProperty("isAdmin")
     @Builder.Default

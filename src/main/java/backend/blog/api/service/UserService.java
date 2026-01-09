@@ -80,6 +80,10 @@ public class UserService {
             user.setProfilePic(update.getProfilePic());
         }
 
+        if (update.getBio() != null) {
+            user.setBio(update.getBio());
+        }
+
         if (update.getPassword() != null && !update.getPassword().isBlank()) {
             user.setPassword(encoder.encode(update.getPassword()));
         }

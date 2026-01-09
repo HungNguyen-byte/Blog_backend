@@ -52,6 +52,11 @@ public class AuthService {
             newUser.setProfilePic("");
         }
 
+        // bio → dùng default empty string nếu null
+        if (newUser.getBio() == null) {
+            newUser.setBio("");
+        }
+
         // Ensure admin is false for new registrations (security: prevent privilege escalation)
         newUser.setAdmin(false);
 
