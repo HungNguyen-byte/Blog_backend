@@ -46,7 +46,7 @@ public class CategoryService {
 
     public Category create(String name) {
         if (categoryRepository.existsByNameIgnoreCase(name)) {
-            throw new RuntimeException("Category already exists");
+            throw new RuntimeException("The category has already existed.");
         }
 
         Category c = new Category();
