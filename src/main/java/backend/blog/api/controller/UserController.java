@@ -36,4 +36,12 @@ public class UserController {
     public ResponseEntity<?> getUser(@PathVariable String id) {
         return ResponseEntity.ok(userService.getUser(id));
     }
+
+    @GetMapping("/check-username")
+    public ResponseEntity<?> checkUsername(
+            @RequestParam String username,
+            @RequestParam(required = false) String excludeUserId) {
+        boolean exists = userService.checkUsernameExists(username, excludeUserId);
+        return ResponseEntity.ok(exists);
+    }
 }

@@ -66,6 +66,10 @@ public class UserService {
 
         // === UPDATE FIELDS ===
         if (update.getUsername() != null && !update.getUsername().isBlank()) {
+            // Check if username already exists (excluding current user)
+            if (checkUsernameExists(update.getUsername(), id)) {
+                throw new RuntimeException("The username has already existed");
+            }
             user.setUsername(update.getUsername());
         }
 
@@ -108,5 +112,11 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         user.setPassword(null);
         return user;
+    }
+
+    public boolean checkUsernameExists(String username, String excludeUserId) {
+        return userRepository.findByUsername(username)
+                .filter(user -> excludeUserId == null || !user.getUserid().equals(excludeUserId))
+                .isPresent();
     }
 }
